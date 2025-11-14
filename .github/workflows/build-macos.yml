@@ -11,10 +11,10 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11'
     
@@ -33,7 +33,7 @@ jobs:
           --osx-bundle-identifier=com.imageconverter.app \
           image_converter.py
     
-    - name: Create DMG (optional)
+    - name: Create DMG
       run: |
         brew install create-dmg
         create-dmg \
@@ -46,13 +46,13 @@ jobs:
           "dist/ImageConverter.app"
     
     - name: Upload app
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ImageConverter-macOS
         path: dist/ImageConverter.app
     
     - name: Upload DMG
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ImageConverter-DMG
         path: ImageConverter.dmg
