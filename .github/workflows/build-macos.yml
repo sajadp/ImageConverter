@@ -1,0 +1,58 @@
+name: Build macOS App
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        pip install pillow pillow-heif pyinstaller
+    
+    - name: Build macOS app
+      run: |
+        python -m PyInstaller \
+          --onedir \
+          --windowed \
+          --icon=app.icns \
+          --name="ImageConverter" \
+          --clean \
+          --osx-bundle-identifier=com.imageconverter.app \
+          image_converter.py
+    
+    - name: Create DMG (optional)
+      run: |
+        brew install create-dmg
+        create-dmg \
+          --volname "ImageConverter" \
+          --window-pos 200 120 \
+          --window-size 800 400 \
+          --icon-size 100 \
+          --app-drop-link 600 185 \
+          "ImageConverter.dmg" \
+          "dist/ImageConverter.app"
+    
+    - name: Upload app
+      uses: actions/upload-artifact@v3
+      with:
+        name: ImageConverter-macOS
+        path: dist/ImageConverter.app
+    
+    - name: Upload DMG
+      uses: actions/upload-artifact@v3
+      with:
+        name: ImageConverter-DMG
+        path: ImageConverter.dmg
